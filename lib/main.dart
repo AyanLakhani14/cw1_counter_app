@@ -26,9 +26,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _counter = 0;
+  bool _isFirstImage = true;
 
   void _incrementCounter() {
     setState(() => _counter++);
+  }
+
+  void _toggleImage() {
+    setState(() => _isFirstImage = !_isFirstImage);
   }
 
   @override
@@ -47,6 +52,18 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               onPressed: _incrementCounter,
               child: const Text('Increment'),
+            ),
+            const SizedBox(height: 24),
+            Image.asset(
+              _isFirstImage ? 'assets/image1.png' : 'assets/image2.png',
+              width: 180,
+              height: 180,
+              fit: BoxFit.cover,
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: _toggleImage,
+              child: const Text('Toggle Image'),
             ),
           ],
         ),
