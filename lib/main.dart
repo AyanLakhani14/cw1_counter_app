@@ -24,16 +24,39 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   int _counter = 0;
   bool _isFirstImage = true;
+
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+    _controller.value = 1.0; // start visible
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void _incrementCounter() {
     setState(() => _counter++);
   }
 
-  void _toggleImage() {
+  Future<void> _toggleImage() async {
+    await _controller.reverse(); // fade out
     setState(() => _isFirstImage = !_isFirstImage);
+    await _controller.forward(); // fade in
   }
 
   @override
@@ -54,11 +77,14 @@ class _HomePageState extends State<HomePage> {
               child: const Text('Increment'),
             ),
             const SizedBox(height: 24),
-            Image.asset(
-              _isFirstImage ? 'assets/image1.png' : 'assets/image2.png',
-              width: 180,
-              height: 180,
-              fit: BoxFit.cover,
+            FadeTransition(
+              opacity: _fade,
+              child: Image.asset(
+                _isFirstImage ? 'assets/image1.png' : 'assets/image2.png',
+                width: 180,
+                height: 180,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(height: 12),
             ElevatedButton(
